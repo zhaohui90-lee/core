@@ -14,7 +14,20 @@ import { flushPostFlushCbs } from './scheduler'
 import { ComponentInternalInstance } from './component'
 import { invokeDirectiveHook } from './directives'
 import { warn } from './warning'
-import { PatchFlags, ShapeFlags, isReservedProp, isOn } from '@vue/shared'
+import {
+  PatchFlags,
+  ShapeFlags,
+  isReservedProp,
+  isOn,
+  normalizeClass,
+  normalizeStyle,
+  stringifyStyle,
+  isBooleanAttr,
+  isString,
+  includeBooleanAttr,
+  isKnownHtmlAttr,
+  isKnownSvgAttr
+} from '@vue/shared'
 import { RendererInternals } from './renderer'
 import { setRef } from './rendererTemplateRef'
 import {
@@ -116,9 +129,12 @@ export function createHydrationFunctions(
             hasMismatch = true
             __DEV__ &&
               warn(
-                `Hydration text mismatch:` +
-                  `\n- Client: ${JSON.stringify((node as Text).data)}` +
-                  `\n- Server: ${JSON.stringify(vnode.children)}`
+                `Hydration text mismatch in`,
+                node.parentNode,
+                `\n  - rendered on server: ${JSON.stringify(vnode.children)}` +
+                  `\n  - expected on client: ${JSON.stringify(
+                    (node as Text).data
+                  )}`
               )
             ;(node as Text).data = vnode.children as string
           }
@@ -292,14 +308,65 @@ export function createHydrationFunctions(
       if (dirs) {
         invokeDirectiveHook(vnode, null, parentComponent, 'created')
       }
+
+      // children
+      if (
+        shapeFlag & ShapeFlags.ARRAY_CHILDREN &&
+        // skip if element has innerHTML / textContent
+        !(props && (props.innerHTML || props.textContent))
+      ) {
+        let next = hydrateChildren(
+          el.firstChild,
+          vnode,
+          el,
+          parentComponent,
+          parentSuspense,
+          slotScopeIds,
+          optimized
+        )
+        let hasWarned = false
+        while (next) {
+          hasMismatch = true
+          if (__DEV__ && !hasWarned) {
+            warn(
+              `Hydration children mismatch on`,
+              el,
+              `\nServer rendered element contains more child nodes than client vdom.`
+            )
+            hasWarned = true
+          }
+          // The SSRed DOM contains more nodes than it should. Remove them.
+          const cur = next
+          next = next.nextSibling
+          remove(cur)
+        }
+      } else if (shapeFlag & ShapeFlags.TEXT_CHILDREN) {
+        if (el.textContent !== vnode.children) {
+          hasMismatch = true
+          __DEV__ &&
+            warn(
+              `Hydration text content mismatch on`,
+              el,
+              `\n  - rendered on server: ${vnode.children as string}` +
+                `\n  - expected on client: ${el.textContent}`
+            )
+          el.textContent = vnode.children as string
+        }
+      }
+
       // props
       if (props) {
         if (
+          __DEV__ ||
           forcePatchValue ||
           !optimized ||
           patchFlag & (PatchFlags.FULL_PROPS | PatchFlags.HYDRATE_EVENTS)
         ) {
           for (const key in props) {
+            // check hydration mismatch
+            if (__DEV__ && propHasMismatch(el, key, props[key])) {
+              hasMismatch = true
+            }
             if (
               (forcePatchValue && key.endsWith('value')) ||
               (isOn(key) && !isReservedProp(key))
@@ -343,50 +410,6 @@ export function createHydrationFunctions(
           dirs && invokeDirectiveHook(vnode, null, parentComponent, 'mounted')
         }, parentSuspense)
       }
-      // children
-      if (
-        shapeFlag & ShapeFlags.ARRAY_CHILDREN &&
-        // skip if element has innerHTML / textContent
-        !(props && (props.innerHTML || props.textContent))
-      ) {
-        let next = hydrateChildren(
-          el.firstChild,
-          vnode,
-          el,
-          parentComponent,
-          parentSuspense,
-          slotScopeIds,
-          optimized
-        )
-        let hasWarned = false
-        while (next) {
-          hasMismatch = true
-          if (__DEV__ && !hasWarned) {
-            warn(
-              `Hydration children mismatch in <${vnode.type as string}>: ` +
-                `server rendered element contains more child nodes than client vdom.`
-            )
-            hasWarned = true
-          }
-          // The SSRed DOM contains more nodes than it should. Remove them.
-          const cur = next
-          next = next.nextSibling
-          remove(cur)
-        }
-      } else if (shapeFlag & ShapeFlags.TEXT_CHILDREN) {
-        if (el.textContent !== vnode.children) {
-          hasMismatch = true
-          __DEV__ &&
-            warn(
-              `Hydration text content mismatch in <${
-                vnode.type as string
-              }>:\n` +
-                `- Client: ${el.textContent}\n` +
-                `- Server: ${vnode.children as string}`
-            )
-          el.textContent = vnode.children as string
-        }
-      }
     }
     return el.nextSibling
   }
@@ -423,8 +446,9 @@ export function createHydrationFunctions(
         hasMismatch = true
         if (__DEV__ && !hasWarned) {
           warn(
-            `Hydration children mismatch in <${container.tagName.toLowerCase()}>: ` +
-              `server rendered element contains fewer child nodes than client vdom.`
+            `Hydration children mismatch on`,
+            container,
+            `\nServer rendered element contains fewer child nodes than client vdom.`
           )
           hasWarned = true
         }
@@ -553,4 +577,59 @@ export function createHydrationFunctions(
   }
 
   return [hydrate, hydrateNode] as const
+}
+
+/**
+ * Dev only
+ */
+function propHasMismatch(el: Element, key: string, clientValue: any): boolean {
+  let mismatchType: string | undefined
+  let mismatchKey: string | undefined
+  let actual: any
+  let expected: any
+  if (key === 'class') {
+    actual = el.className
+    expected = normalizeClass(clientValue)
+    if (actual !== expected) {
+      mismatchType = mismatchKey = `class`
+    }
+  } else if (key === 'style') {
+    actual = el.getAttribute('style')
+    expected = isString(clientValue)
+      ? clientValue
+      : stringifyStyle(normalizeStyle(clientValue))
+    if (actual !== expected) {
+      mismatchType = mismatchKey = 'style'
+    }
+  } else if (
+    (el instanceof SVGElement && isKnownSvgAttr(key)) ||
+    (el instanceof HTMLElement && (isBooleanAttr(key) || isKnownHtmlAttr(key)))
+  ) {
+    actual = el.hasAttribute(key) && el.getAttribute(key)
+    expected = isBooleanAttr(key)
+      ? includeBooleanAttr(clientValue)
+        ? ''
+        : false
+      : String(clientValue)
+    if (actual !== expected) {
+      mismatchType = `attribute`
+      mismatchKey = key
+    }
+  }
+
+  if (mismatchType) {
+    const format = (v: any) =>
+      v === false ? `(not rendered)` : `${mismatchKey}="${v}"`
+    warn(
+      `Hydration ${mismatchType} mismatch on`,
+      el,
+      `\n  - rendered on server: ${format(actual)}` +
+        `\n  - expected on client: ${format(expected)}` +
+        `\n  Note: this mismatch is check-only. The DOM will not be rectified ` +
+        `in production due to performance overhead.` +
+        `\n  You should fix the source of the mismatch.`
+    )
+    return true
+  }
+  return false
 }

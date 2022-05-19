@@ -902,7 +902,7 @@ describe('SSR hydration', () => {
 
   test('force hydrate select option with non-string value bindings', () => {
     const { container } = mountWithHydration(
-      '<select><option :value="true">ok</option></select>',
+      '<select><option value="true">ok</option></select>',
       () =>
         h('select', [
           // hoisted because bound value is a constant...
@@ -924,7 +924,7 @@ describe('SSR hydration', () => {
         h('div', 'bar')
       )
       expect(container.innerHTML).toBe('<div>bar</div>')
-      expect(`Hydration text content mismatch in <div>`).toHaveBeenWarned()
+      expect(`Hydration text content mismatch`).toHaveBeenWarned()
     })
 
     test('not enough children', () => {
@@ -934,7 +934,7 @@ describe('SSR hydration', () => {
       expect(container.innerHTML).toBe(
         '<div><span>foo</span><span>bar</span></div>'
       )
-      expect(`Hydration children mismatch in <div>`).toHaveBeenWarned()
+      expect(`Hydration children mismatch`).toHaveBeenWarned()
     })
 
     test('too many children', () => {
@@ -943,7 +943,7 @@ describe('SSR hydration', () => {
         () => h('div', [h('span', 'foo')])
       )
       expect(container.innerHTML).toBe('<div><span>foo</span></div>')
-      expect(`Hydration children mismatch in <div>`).toHaveBeenWarned()
+      expect(`Hydration children mismatch`).toHaveBeenWarned()
     })
 
     test('complete mismatch', () => {
@@ -1000,6 +1000,58 @@ describe('SSR hydration', () => {
       )
       expect(teleportContainer.innerHTML).toBe(`<span>value</span>`)
       expect(`Hydration children mismatch`).toHaveBeenWarned()
+    })
+
+    test('class mismatch', () => {
+      mountWithHydration(`<div class="foo bar"></div>`, () =>
+        h('div', { class: ['foo', 'bar'] })
+      )
+      mountWithHydration(`<div class="foo bar"></div>`, () =>
+        h('div', { class: { foo: true, bar: true } })
+      )
+      mountWithHydration(`<div class="foo bar"></div>`, () =>
+        h('div', { class: 'foo bar' })
+      )
+      expect(`Hydration class mismatch`).not.toHaveBeenWarned()
+      mountWithHydration(`<div class="foo bar"></div>`, () =>
+        h('div', { class: 'foo' })
+      )
+      expect(`Hydration class mismatch`).toHaveBeenWarned()
+    })
+
+    test('style mismatch', () => {
+      mountWithHydration(`<div style="color:red;"></div>`, () =>
+        h('div', { style: { color: 'red' } })
+      )
+      mountWithHydration(`<div style="color:red;"></div>`, () =>
+        h('div', { style: `color:red;` })
+      )
+      expect(`Hydration style mismatch`).not.toHaveBeenWarned()
+      mountWithHydration(`<div style="color:red;"></div>`, () =>
+        h('div', { style: { color: 'green' } })
+      )
+      expect(`Hydration style mismatch`).toHaveBeenWarned()
+    })
+
+    test('attr mismatch', () => {
+      mountWithHydration(`<div id="foo"></div>`, () => h('div', { id: 'foo' }))
+      mountWithHydration(`<div spellcheck></div>`, () =>
+        h('div', { spellcheck: '' })
+      )
+      // boolean
+      mountWithHydration(`<select multiple></div>`, () =>
+        h('select', { multiple: true })
+      )
+      mountWithHydration(`<select multiple></div>`, () =>
+        h('select', { multiple: 'multiple' })
+      )
+      expect(`Hydration attribute mismatch`).not.toHaveBeenWarned()
+
+      mountWithHydration(`<div></div>`, () => h('div', { id: 'foo' }))
+      expect(`Hydration attribute mismatch`).toHaveBeenWarned()
+
+      mountWithHydration(`<div id="bar"></div>`, () => h('div', { id: 'foo' }))
+      expect(`Hydration attribute mismatch`).toHaveBeenWarnedTimes(2)
     })
   })
 })
