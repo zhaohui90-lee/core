@@ -3,11 +3,15 @@ import { SFCDescriptor } from '../parse'
 import { generateCodeFrame } from '@vue/shared'
 import { parse as babelParse, ParserPlugin } from '@babel/parser'
 import { ImportBinding, SFCScriptCompileOptions } from '../compileScript'
-import { PropsDestructureBindings } from './defineProps'
-import { ModelDecl } from './defineModel'
+import { DEFINE_PROPS, PropsDestructureBindings } from './defineProps'
+import { DEFINE_MODEL, ModelDecl } from './defineModel'
 import { BindingMetadata } from '../../../compiler-core/src'
 import MagicString from 'magic-string'
 import { TypeScope } from './resolveType'
+import { DEFINE_EMITS } from './defineEmits'
+import { DEFINE_EXPOSE } from './defineExpose'
+import { DEFINE_OPTIONS } from './defineOptions'
+import { DEFINE_SLOTS } from './defineSlots'
 
 export class ScriptCompileContext {
   isJS: boolean
@@ -26,6 +30,14 @@ export class ScriptCompileContext {
   scope?: TypeScope
   globalScopes?: TypeScope[]
   userImports: Record<string, ImportBinding> = Object.create(null)
+  macrosAliases: Record<string, string | undefined> = {
+    [DEFINE_PROPS]: DEFINE_PROPS,
+    [DEFINE_EMITS]: DEFINE_EMITS,
+    [DEFINE_EXPOSE]: DEFINE_EXPOSE,
+    [DEFINE_OPTIONS]: DEFINE_OPTIONS,
+    [DEFINE_SLOTS]: DEFINE_SLOTS,
+    [DEFINE_MODEL]: DEFINE_MODEL
+  }
 
   // macros presence check
   hasDefinePropsCall = false

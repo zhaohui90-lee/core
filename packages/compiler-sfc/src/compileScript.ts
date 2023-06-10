@@ -40,7 +40,7 @@ import {
   genRuntimeEmits,
   DEFINE_EMITS
 } from './script/defineEmits'
-import { DEFINE_EXPOSE, processDefineExpose } from './script/defineExpose'
+import { processDefineExpose } from './script/defineExpose'
 import { DEFINE_OPTIONS, processDefineOptions } from './script/defineOptions'
 import { processDefineSlots } from './script/defineSlots'
 import { DEFINE_MODEL, processDefineModel } from './script/defineModel'
@@ -244,6 +244,10 @@ export function compileScript(
       isUsedInTemplate = isImportUsed(local, sfc)
     }
 
+    if (Object.keys(ctx.macrosAliases).includes(imported)) {
+      ctx.macrosAliases[imported] = undefined
+    }
+
     ctx.userImports[local] = {
       isType,
       imported,
@@ -319,21 +323,22 @@ export function compileScript(
         )
       }
 
-      for (let i = 0; i < node.specifiers.length; i++) {
-        const specifier = node.specifiers[i]
+      const source = node.source.value
+      for (const [i, specifier] of node.specifiers.entries()) {
         const local = specifier.local.name
         const imported = getImportedName(specifier)
-        const source = node.source.value
         const existing = ctx.userImports[local]
         if (
           source === 'vue' &&
-          (imported === DEFINE_PROPS ||
-            imported === DEFINE_EMITS ||
-            imported === DEFINE_EXPOSE)
+          Object.keys(ctx.macrosAliases).includes(imported)
         ) {
-          warnOnce(
-            `\`${imported}\` is a compiler macro and no longer needs to be imported.`
-          )
+          if (local === imported)
+            warnOnce(
+              `\`${imported}\` is a compiler macro and no longer needs to be imported.`
+            )
+          else {
+            ctx.macrosAliases[imported] = local
+          }
           removeSpecifier(i)
         } else if (existing) {
           if (existing.source === source && existing.imported === imported) {
