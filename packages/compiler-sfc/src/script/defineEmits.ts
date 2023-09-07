@@ -4,7 +4,7 @@ import {
   LVal,
   Node,
   ObjectPattern,
-  RestElement
+  RestElement,
 } from '@babel/types'
 import { isCallOf } from './utils'
 import { ScriptCompileContext } from './context'
@@ -15,7 +15,7 @@ export const DEFINE_EMITS = 'defineEmits'
 export function processDefineEmits(
   ctx: ScriptCompileContext,
   node: Node,
-  declId?: LVal
+  declId?: LVal,
 ): boolean {
   if (!isCallOf(node, DEFINE_EMITS)) {
     return false
@@ -30,7 +30,7 @@ export function processDefineEmits(
       ctx.error(
         `${DEFINE_EMITS}() cannot accept both type and non-type arguments ` +
           `at the same time. Use one or the other.`,
-        node
+        node,
       )
     }
     ctx.emitsTypeDecl = node.typeParameters.params[0]
@@ -85,7 +85,7 @@ function extractRuntimeEmits(ctx: ScriptCompileContext): Set<string> {
     if (hasProperty) {
       ctx.error(
         `defineEmits() type cannot mixed call signature and property syntax.`,
-        node
+        node,
       )
     }
     for (const call of calls) {
@@ -99,7 +99,7 @@ function extractRuntimeEmits(ctx: ScriptCompileContext): Set<string> {
 function extractEventNames(
   ctx: ScriptCompileContext,
   eventName: ArrayPattern | Identifier | ObjectPattern | RestElement,
-  emits: Set<string>
+  emits: Set<string>,
 ) {
   if (
     eventName.type === 'Identifier' &&
