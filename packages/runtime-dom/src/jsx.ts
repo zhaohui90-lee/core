@@ -29,8 +29,8 @@
 import * as CSS from 'csstype'
 
 export interface CSSProperties
-  extends CSS.Properties<string | number>,
-    CSS.PropertiesHyphen<string | number> {
+  extends CSS.Properties<string | Numberish>,
+    CSS.PropertiesHyphen<string | Numberish> {
   /**
    * The index signature was removed to enable closed typing for style
    * using CSSType. You're able to use type assertion or module augmentation
@@ -39,198 +39,266 @@ export interface CSSProperties
    * For examples and more information, visit:
    * https://github.com/frenic/csstype#what-should-i-do-when-i-get-type-errors
    */
-  [v: `--${string}`]: string | number | undefined
+  [v: `--${string}`]: string | Numberish | undefined
 }
 
 type Booleanish = boolean | 'true' | 'false'
 type Numberish = number | string
+type CrossOrigin = 'anonymous' | 'use-credentials' | '' | undefined
 
 // All the WAI-ARIA 1.1 attributes from https://www.w3.org/TR/wai-aria-1.1/
-interface AriaAttributes {
+export interface AriaAttributes {
   /** Identifies the currently active element when DOM focus is on a composite widget, textbox, group, or application. */
-  'aria-activedescendant'?: string
+  'aria-activedescendant'?: string | undefined
   /** Indicates whether assistive technologies will present all, or only parts of, the changed region based on the change notifications defined by the aria-relevant attribute. */
-  'aria-atomic'?: Booleanish
+  'aria-atomic'?: Booleanish | undefined
   /**
    * Indicates whether inputting text could trigger display of one or more predictions of the user's intended value for an input and specifies how predictions would be
    * presented if they are made.
    */
-  'aria-autocomplete'?: 'none' | 'inline' | 'list' | 'both'
+  'aria-autocomplete'?: 'none' | 'inline' | 'list' | 'both' | undefined
   /** Indicates an element is being modified and that assistive technologies MAY want to wait until the modifications are complete before exposing them to the user. */
-  'aria-busy'?: Booleanish
+  /**
+   * Defines a string value that labels the current element, which is intended to be converted into Braille.
+   * @see aria-label.
+   */
+  'aria-braillelabel'?: string | undefined
+  /**
+   * Defines a human-readable, author-localized abbreviated description for the role of an element, which is intended to be converted into Braille.
+   * @see aria-roledescription.
+   */
+  'aria-brailleroledescription'?: string | undefined
+  'aria-busy'?: Booleanish | undefined
   /**
    * Indicates the current "checked" state of checkboxes, radio buttons, and other widgets.
    * @see aria-pressed @see aria-selected.
    */
-  'aria-checked'?: Booleanish | 'mixed'
+  'aria-checked'?: boolean | 'false' | 'mixed' | 'true' | undefined
   /**
    * Defines the total number of columns in a table, grid, or treegrid.
    * @see aria-colindex.
    */
-  'aria-colcount'?: Numberish
+  'aria-colcount'?: Numberish | undefined
   /**
    * Defines an element's column index or position with respect to the total number of columns within a table, grid, or treegrid.
    * @see aria-colcount @see aria-colspan.
    */
-  'aria-colindex'?: Numberish
+  'aria-colindex'?: Numberish | undefined
+  /**
+   * Defines a human readable text alternative of aria-colindex.
+   * @see aria-rowindextext.
+   */
+  'aria-colindextext'?: string | undefined
   /**
    * Defines the number of columns spanned by a cell or gridcell within a table, grid, or treegrid.
    * @see aria-colindex @see aria-rowspan.
    */
-  'aria-colspan'?: Numberish
+  'aria-colspan'?: Numberish | undefined
   /**
    * Identifies the element (or elements) whose contents or presence are controlled by the current element.
    * @see aria-owns.
    */
-  'aria-controls'?: string
+  'aria-controls'?: string | undefined
   /** Indicates the element that represents the current item within a container or set of related elements. */
-  'aria-current'?: Booleanish | 'page' | 'step' | 'location' | 'date' | 'time'
+  'aria-current'?:
+    | boolean
+    | 'false'
+    | 'true'
+    | 'page'
+    | 'step'
+    | 'location'
+    | 'date'
+    | 'time'
+    | undefined
   /**
    * Identifies the element (or elements) that describes the object.
    * @see aria-labelledby
    */
-  'aria-describedby'?: string
+  'aria-describedby'?: string | undefined
+  /**
+   * Defines a string value that describes or annotates the current element.
+   * @see related aria-describedby.
+   */
+  'aria-description'?: string | undefined
   /**
    * Identifies the element that provides a detailed, extended description for the object.
    * @see aria-describedby.
    */
-  'aria-details'?: string
+  'aria-details'?: string | undefined
   /**
    * Indicates that the element is perceivable but disabled, so it is not editable or otherwise operable.
    * @see aria-hidden @see aria-readonly.
    */
-  'aria-disabled'?: Booleanish
+  'aria-disabled'?: Booleanish | undefined
   /**
    * Indicates what functions can be performed when a dragged object is released on the drop target.
    * @deprecated in ARIA 1.1
    */
-  'aria-dropeffect'?: 'none' | 'copy' | 'execute' | 'link' | 'move' | 'popup'
+  'aria-dropeffect'?:
+    | 'none'
+    | 'copy'
+    | 'execute'
+    | 'link'
+    | 'move'
+    | 'popup'
+    | undefined
   /**
    * Identifies the element that provides an error message for the object.
    * @see aria-invalid @see aria-describedby.
    */
-  'aria-errormessage'?: string
+  'aria-errormessage'?: string | undefined
   /** Indicates whether the element, or another grouping element it controls, is currently expanded or collapsed. */
-  'aria-expanded'?: Booleanish
+  'aria-expanded'?: Booleanish | undefined
   /**
    * Identifies the next element (or elements) in an alternate reading order of content which, at the user's discretion,
    * allows assistive technology to override the general default of reading in document source order.
    */
-  'aria-flowto'?: string
+  'aria-flowto'?: string | undefined
   /**
    * Indicates an element's "grabbed" state in a drag-and-drop operation.
    * @deprecated in ARIA 1.1
    */
-  'aria-grabbed'?: Booleanish
+  'aria-grabbed'?: Booleanish | undefined
   /** Indicates the availability and type of interactive popup element, such as menu or dialog, that can be triggered by an element. */
-  'aria-haspopup'?: Booleanish | 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog'
+  'aria-haspopup'?:
+    | boolean
+    | 'false'
+    | 'true'
+    | 'menu'
+    | 'listbox'
+    | 'tree'
+    | 'grid'
+    | 'dialog'
+    | undefined
   /**
    * Indicates whether the element is exposed to an accessibility API.
    * @see aria-disabled.
    */
-  'aria-hidden'?: Booleanish
+  'aria-hidden'?: Booleanish | undefined
   /**
    * Indicates the entered value does not conform to the format expected by the application.
    * @see aria-errormessage.
    */
-  'aria-invalid'?: Booleanish | 'grammar' | 'spelling'
+  'aria-invalid'?:
+    | boolean
+    | 'false'
+    | 'true'
+    | 'grammar'
+    | 'spelling'
+    | undefined
   /** Indicates keyboard shortcuts that an author has implemented to activate or give focus to an element. */
-  'aria-keyshortcuts'?: string
+  'aria-keyshortcuts'?: string | undefined
   /**
    * Defines a string value that labels the current element.
    * @see aria-labelledby.
    */
-  'aria-label'?: string
+  'aria-label'?: string | undefined
   /**
    * Identifies the element (or elements) that labels the current element.
    * @see aria-describedby.
    */
-  'aria-labelledby'?: string
+  'aria-labelledby'?: string | undefined
   /** Defines the hierarchical level of an element within a structure. */
-  'aria-level'?: Numberish
+  'aria-level'?: Numberish | undefined
   /** Indicates that an element will be updated, and describes the types of updates the user agents, assistive technologies, and user can expect from the live region. */
-  'aria-live'?: 'off' | 'assertive' | 'polite'
+  'aria-live'?: 'off' | 'assertive' | 'polite' | undefined
   /** Indicates whether an element is modal when displayed. */
-  'aria-modal'?: Booleanish
+  'aria-modal'?: Booleanish | undefined
   /** Indicates whether a text box accepts multiple lines of input or only a single line. */
-  'aria-multiline'?: Booleanish
+  'aria-multiline'?: Booleanish | undefined
   /** Indicates that the user may select more than one item from the current selectable descendants. */
-  'aria-multiselectable'?: Booleanish
+  'aria-multiselectable'?: Booleanish | undefined
   /** Indicates whether the element's orientation is horizontal, vertical, or unknown/ambiguous. */
-  'aria-orientation'?: 'horizontal' | 'vertical'
+  'aria-orientation'?: 'horizontal' | 'vertical' | undefined
   /**
    * Identifies an element (or elements) in order to define a visual, functional, or contextual parent/child relationship
    * between DOM elements where the DOM hierarchy cannot be used to represent the relationship.
    * @see aria-controls.
    */
-  'aria-owns'?: string
+  'aria-owns'?: string | undefined
   /**
    * Defines a short hint (a word or short phrase) intended to aid the user with data entry when the control has no value.
    * A hint could be a sample value or a brief description of the expected format.
    */
-  'aria-placeholder'?: string
+  'aria-placeholder'?: string | undefined
   /**
    * Defines an element's number or position in the current set of listitems or treeitems. Not required if all elements in the set are present in the DOM.
    * @see aria-setsize.
    */
-  'aria-posinset'?: Numberish
+  'aria-posinset'?: Numberish | undefined
   /**
    * Indicates the current "pressed" state of toggle buttons.
    * @see aria-checked @see aria-selected.
    */
-  'aria-pressed'?: Booleanish | 'mixed'
+  'aria-pressed'?: boolean | 'false' | 'mixed' | 'true' | undefined
   /**
    * Indicates that the element is not editable, but is otherwise operable.
    * @see aria-disabled.
    */
-  'aria-readonly'?: Booleanish
+  'aria-readonly'?: Booleanish | undefined
   /**
    * Indicates what notifications the user agent will trigger when the accessibility tree within a live region is modified.
    * @see aria-atomic.
    */
-  'aria-relevant'?: 'additions' | 'additions text' | 'all' | 'removals' | 'text'
+  'aria-relevant'?:
+    | 'additions'
+    | 'additions removals'
+    | 'additions text'
+    | 'all'
+    | 'removals'
+    | 'removals additions'
+    | 'removals text'
+    | 'text'
+    | 'text additions'
+    | 'text removals'
+    | undefined
   /** Indicates that user input is required on the element before a form may be submitted. */
-  'aria-required'?: Booleanish
+  'aria-required'?: Booleanish | undefined
   /** Defines a human-readable, author-localized description for the role of an element. */
-  'aria-roledescription'?: string
+  'aria-roledescription'?: string | undefined
   /**
    * Defines the total number of rows in a table, grid, or treegrid.
    * @see aria-rowindex.
    */
-  'aria-rowcount'?: Numberish
+  'aria-rowcount'?: Numberish | undefined
   /**
    * Defines an element's row index or position with respect to the total number of rows within a table, grid, or treegrid.
    * @see aria-rowcount @see aria-rowspan.
    */
-  'aria-rowindex'?: Numberish
+  'aria-rowindex'?: Numberish | undefined
+  /**
+   * Defines a human readable text alternative of aria-rowindex.
+   * @see aria-colindextext.
+   */
+  'aria-rowindextext'?: string | undefined
   /**
    * Defines the number of rows spanned by a cell or gridcell within a table, grid, or treegrid.
    * @see aria-rowindex @see aria-colspan.
    */
-  'aria-rowspan'?: Numberish
+  'aria-rowspan'?: Numberish | undefined
   /**
    * Indicates the current "selected" state of various widgets.
    * @see aria-checked @see aria-pressed.
    */
-  'aria-selected'?: Booleanish
+  'aria-selected'?: Booleanish | undefined
   /**
    * Defines the number of items in the current set of listitems or treeitems. Not required if all elements in the set are present in the DOM.
    * @see aria-posinset.
    */
-  'aria-setsize'?: Numberish
+  'aria-setsize'?: Numberish | undefined
   /** Indicates if items in a table or grid are sorted in ascending or descending order. */
-  'aria-sort'?: 'none' | 'ascending' | 'descending' | 'other'
+  'aria-sort'?: 'none' | 'ascending' | 'descending' | 'other' | undefined
   /** Defines the maximum allowed value for a range widget. */
-  'aria-valuemax'?: Numberish
+  'aria-valuemax'?: Numberish | undefined
   /** Defines the minimum allowed value for a range widget. */
-  'aria-valuemin'?: Numberish
+  'aria-valuemin'?: Numberish | undefined
   /**
    * Defines the current value for a range widget.
    * @see aria-valuetext.
    */
-  'aria-valuenow'?: Numberish
+  'aria-valuenow'?: Numberish | undefined
   /** Defines the human readable text alternative of aria-valuenow for a range widget. */
-  'aria-valuetext'?: string
+  'aria-valuetext'?: string | undefined
 }
 
 // Vue's style normalization supports nested arrays
@@ -320,153 +388,234 @@ type HTMLAttributeReferrerPolicy =
   | 'strict-origin-when-cross-origin'
   | 'unsafe-url'
 
+type HTMLAttributeAnchorTarget =
+  | '_self'
+  | '_blank'
+  | '_parent'
+  | '_top'
+  | (string & {})
+
+type AriaRole =
+  | 'alert'
+  | 'alertdialog'
+  | 'application'
+  | 'article'
+  | 'banner'
+  | 'button'
+  | 'cell'
+  | 'checkbox'
+  | 'columnheader'
+  | 'combobox'
+  | 'complementary'
+  | 'contentinfo'
+  | 'definition'
+  | 'dialog'
+  | 'directory'
+  | 'document'
+  | 'feed'
+  | 'figure'
+  | 'form'
+  | 'grid'
+  | 'gridcell'
+  | 'group'
+  | 'heading'
+  | 'img'
+  | 'link'
+  | 'list'
+  | 'listbox'
+  | 'listitem'
+  | 'log'
+  | 'main'
+  | 'marquee'
+  | 'math'
+  | 'menu'
+  | 'menubar'
+  | 'menuitem'
+  | 'menuitemcheckbox'
+  | 'menuitemradio'
+  | 'navigation'
+  | 'none'
+  | 'note'
+  | 'option'
+  | 'presentation'
+  | 'progressbar'
+  | 'radio'
+  | 'radiogroup'
+  | 'region'
+  | 'row'
+  | 'rowgroup'
+  | 'rowheader'
+  | 'scrollbar'
+  | 'search'
+  | 'searchbox'
+  | 'separator'
+  | 'slider'
+  | 'spinbutton'
+  | 'status'
+  | 'switch'
+  | 'tab'
+  | 'table'
+  | 'tablist'
+  | 'tabpanel'
+  | 'term'
+  | 'textbox'
+  | 'timer'
+  | 'toolbar'
+  | 'tooltip'
+  | 'tree'
+  | 'treegrid'
+  | 'treeitem'
+  | (string & {})
+
 export interface AnchorHTMLAttributes extends HTMLAttributes {
   download?: any
-  href?: string
-  hreflang?: string
-  media?: string
-  ping?: string
-  rel?: string
-  target?: string
-  type?: string
-  referrerpolicy?: HTMLAttributeReferrerPolicy
+  href?: string | undefined
+  hrefLang?: string | undefined
+  media?: string | undefined
+  ping?: string | undefined
+  target?: HTMLAttributeAnchorTarget | undefined
+  type?: string | undefined
+  referrerPolicy?: HTMLAttributeReferrerPolicy | undefined
 }
+
+interface AudioHTMLAttributes extends MediaHTMLAttributes {}
 
 export interface AreaHTMLAttributes extends HTMLAttributes {
-  alt?: string
-  coords?: string
+  alt?: string | undefined
+  coords?: string | undefined
   download?: any
-  href?: string
-  hreflang?: string
-  media?: string
-  referrerpolicy?: HTMLAttributeReferrerPolicy
-  rel?: string
-  shape?: string
-  target?: string
+  href?: string | undefined
+  hrefLang?: string | undefined
+  media?: string | undefined
+  referrerPolicy?: HTMLAttributeReferrerPolicy | undefined
+  shape?: string | undefined
+  target?: string | undefined
 }
 
-export interface AudioHTMLAttributes extends MediaHTMLAttributes {}
-
 export interface BaseHTMLAttributes extends HTMLAttributes {
-  href?: string
-  target?: string
+  href?: string | undefined
+  target?: string | undefined
 }
 
 export interface BlockquoteHTMLAttributes extends HTMLAttributes {
-  cite?: string
+  cite?: string | undefined
 }
 
 export interface ButtonHTMLAttributes extends HTMLAttributes {
-  autofocus?: Booleanish
-  disabled?: Booleanish
-  form?: string
-  formaction?: string
-  formenctype?: string
-  formmethod?: string
-  formnovalidate?: Booleanish
-  formtarget?: string
-  name?: string
-  type?: 'submit' | 'reset' | 'button'
-  value?: string | string[] | number
+  disabled?: Booleanish | undefined
+  form?: string | undefined
+  formAction?: string | undefined
+  formEncType?: string | undefined
+  formMethod?: string | undefined
+  formNoValidate?: Booleanish | undefined
+  formTarget?: string | undefined
+  name?: string | undefined
+  type?: 'submit' | 'reset' | 'button' | undefined
+  value?: string | ReadonlyArray<string> | Numberish | undefined
 }
 
 export interface CanvasHTMLAttributes extends HTMLAttributes {
-  height?: Numberish
-  width?: Numberish
+  height?: Numberish | undefined
+  width?: Numberish | undefined
 }
 
 export interface ColHTMLAttributes extends HTMLAttributes {
-  span?: Numberish
-  width?: Numberish
+  span?: Numberish | undefined
+  width?: Numberish | undefined
 }
 
 export interface ColgroupHTMLAttributes extends HTMLAttributes {
-  span?: Numberish
+  span?: Numberish | undefined
 }
 
 export interface DataHTMLAttributes extends HTMLAttributes {
-  value?: string | string[] | number
+  value?: string | ReadonlyArray<string> | Numberish | undefined
 }
 
 export interface DetailsHTMLAttributes extends HTMLAttributes {
-  open?: Booleanish
+  open?: Booleanish | undefined
 }
 
 export interface DelHTMLAttributes extends HTMLAttributes {
-  cite?: string
-  datetime?: string
+  cite?: string | undefined
+  dateTime?: string | undefined
 }
 
 export interface DialogHTMLAttributes extends HTMLAttributes {
-  open?: Booleanish
+  open?: Booleanish | undefined
 }
 
 export interface EmbedHTMLAttributes extends HTMLAttributes {
-  height?: Numberish
-  src?: string
-  type?: string
-  width?: Numberish
+  height?: Numberish | undefined
+  src?: string | undefined
+  type?: string | undefined
+  width?: Numberish | undefined
 }
 
 export interface FieldsetHTMLAttributes extends HTMLAttributes {
-  disabled?: Booleanish
-  form?: string
-  name?: string
+  disabled?: Booleanish | undefined
+  form?: string | undefined
+  name?: string | undefined
 }
 
 export interface FormHTMLAttributes extends HTMLAttributes {
-  acceptcharset?: string
-  action?: string
-  autocomplete?: string
-  enctype?: string
-  method?: string
-  name?: string
-  novalidate?: Booleanish
-  target?: string
+  acceptCharset?: string | undefined
+  action?: string | undefined
+  autoComplete?: string | undefined
+  encType?: string | undefined
+  method?: string | undefined
+  name?: string | undefined
+  noValidate?: Booleanish | undefined
+  target?: string | undefined
 }
 
 export interface HtmlHTMLAttributes extends HTMLAttributes {
-  manifest?: string
+  manifest?: string | undefined
 }
 
 export interface IframeHTMLAttributes extends HTMLAttributes {
-  allow?: string
-  allowfullscreen?: Booleanish
-  allowtransparency?: Booleanish
-  frameborder?: Numberish
-  height?: Numberish
-  marginheight?: Numberish
-  marginwidth?: Numberish
-  name?: string
-  referrerpolicy?: HTMLAttributeReferrerPolicy
-  sandbox?: string
-  scrolling?: string
-  seamless?: Booleanish
-  src?: string
-  srcdoc?: string
-  width?: Numberish
+  allow?: string | undefined
+  allowFullScreen?: Booleanish | undefined
+  allowTransparency?: Booleanish | undefined
+  /** @deprecated */
+  frameBorder?: Numberish | undefined
+  height?: Numberish | undefined
+  loading?: 'eager' | 'lazy' | undefined
+  /** @deprecated */
+  marginHeight?: Numberish | undefined
+  /** @deprecated */
+  marginWidth?: Numberish | undefined
+  name?: string | undefined
+  referrerPolicy?: HTMLAttributeReferrerPolicy | undefined
+  sandbox?: string | undefined
+  /** @deprecated */
+  scrolling?: string | undefined
+  seamless?: Booleanish | undefined
+  src?: string | undefined
+  srcDoc?: string | undefined
+  width?: Numberish | undefined
 }
 
 export interface ImgHTMLAttributes extends HTMLAttributes {
-  alt?: string
-  crossorigin?: 'anonymous' | 'use-credentials' | ''
-  decoding?: 'async' | 'auto' | 'sync'
-  height?: Numberish
-  referrerpolicy?: HTMLAttributeReferrerPolicy
-  sizes?: string
-  src?: string
-  srcset?: string
-  usemap?: string
-  width?: Numberish
-  loading?: 'lazy' | 'eager'
+  alt?: string | undefined
+  crossOrigin?: CrossOrigin
+  decoding?: 'async' | 'auto' | 'sync' | undefined
+  height?: Numberish | undefined
+  loading?: 'eager' | 'lazy' | undefined
+  referrerPolicy?: HTMLAttributeReferrerPolicy | undefined
+  sizes?: string | undefined
+  src?: string | undefined
+  srcSet?: string | undefined
+  useMap?: string | undefined
+  width?: Numberish | undefined
 }
 
 export interface InsHTMLAttributes extends HTMLAttributes {
-  cite?: string
-  datetime?: string
+  cite?: string | undefined
+  dateTime?: string | undefined
 }
 
-export type InputTypeHTMLAttribute =
+type HTMLInputTypeAttribute =
   | 'button'
   | 'checkbox'
   | 'color'
@@ -492,283 +641,310 @@ export type InputTypeHTMLAttribute =
   | (string & {})
 
 export interface InputHTMLAttributes extends HTMLAttributes {
-  accept?: string
-  alt?: string
-  autocomplete?: string
-  autofocus?: Booleanish
-  capture?: boolean | 'user' | 'environment' // https://www.w3.org/tr/html-media-capture/#the-capture-attribute
-  checked?: Booleanish | any[] | Set<any> // for IDE v-model multi-checkbox support
-  crossorigin?: string
-  disabled?: Booleanish
-  form?: string
-  formaction?: string
-  formenctype?: string
-  formmethod?: string
-  formnovalidate?: Booleanish
-  formtarget?: string
-  height?: Numberish
-  indeterminate?: boolean
-  list?: string
-  max?: Numberish
-  maxlength?: Numberish
-  min?: Numberish
-  minlength?: Numberish
-  multiple?: Booleanish
-  name?: string
-  pattern?: string
-  placeholder?: string
-  readonly?: Booleanish
-  required?: Booleanish
-  size?: Numberish
-  src?: string
-  step?: Numberish
-  type?: InputTypeHTMLAttribute
-  value?: any // we support :value to be bound to anything w/ v-model
-  width?: Numberish
+  accept?: string | undefined
+  alt?: string | undefined
+  autoComplete?: string | undefined
+  capture?: Booleanish | 'user' | 'environment' | undefined // https://www.w3.org/TR/html-media-capture/#the-capture-attribute
+  checked?: Booleanish | undefined
+  disabled?: Booleanish | undefined
+  enterKeyHint?:
+    | 'enter'
+    | 'done'
+    | 'go'
+    | 'next'
+    | 'previous'
+    | 'search'
+    | 'send'
+    | undefined
+  form?: string | undefined
+  formAction?: string | undefined
+  formEncType?: string | undefined
+  formMethod?: string | undefined
+  formNoValidate?: Booleanish | undefined
+  formTarget?: string | undefined
+  height?: Numberish | undefined
+  list?: string | undefined
+  max?: Numberish | undefined
+  maxLength?: Numberish | undefined
+  min?: Numberish | undefined
+  minLength?: Numberish | undefined
+  multiple?: Booleanish | undefined
+  name?: string | undefined
+  pattern?: string | undefined
+  placeholder?: string | undefined
+  readOnly?: Booleanish | undefined
+  required?: Booleanish | undefined
+  size?: Numberish | undefined
+  src?: string | undefined
+  step?: Numberish | undefined
+  type?: HTMLInputTypeAttribute | undefined
+  value?: string | ReadonlyArray<string> | Numberish | undefined
+  width?: Numberish | undefined
 }
 
 export interface KeygenHTMLAttributes extends HTMLAttributes {
-  autofocus?: Booleanish
-  challenge?: string
-  disabled?: Booleanish
-  form?: string
-  keytype?: string
-  keyparams?: string
-  name?: string
+  challenge?: string | undefined
+  disabled?: Booleanish | undefined
+  form?: string | undefined
+  keyType?: string | undefined
+  keyParams?: string | undefined
+  name?: string | undefined
 }
 
 export interface LabelHTMLAttributes extends HTMLAttributes {
-  for?: string
-  form?: string
+  form?: string | undefined
+  htmlFor?: string | undefined
 }
 
 export interface LiHTMLAttributes extends HTMLAttributes {
-  value?: string | string[] | number
+  value?: string | ReadonlyArray<string> | Numberish | undefined
 }
 
 export interface LinkHTMLAttributes extends HTMLAttributes {
-  as?: string
-  crossorigin?: string
-  href?: string
-  hreflang?: string
-  integrity?: string
-  media?: string
-  referrerpolicy?: HTMLAttributeReferrerPolicy
-  rel?: string
-  sizes?: string
-  type?: string
+  as?: string | undefined
+  crossOrigin?: CrossOrigin
+  fetchPriority?: 'high' | 'low' | 'auto'
+  href?: string | undefined
+  hrefLang?: string | undefined
+  integrity?: string | undefined
+  media?: string | undefined
+  imageSrcSet?: string | undefined
+  imageSizes?: string | undefined
+  referrerPolicy?: HTMLAttributeReferrerPolicy | undefined
+  sizes?: string | undefined
+  type?: string | undefined
+  charSet?: string | undefined
 }
 
 export interface MapHTMLAttributes extends HTMLAttributes {
-  name?: string
+  name?: string | undefined
 }
 
 export interface MenuHTMLAttributes extends HTMLAttributes {
-  type?: string
+  type?: string | undefined
 }
 
 export interface MediaHTMLAttributes extends HTMLAttributes {
-  autoplay?: Booleanish
-  controls?: Booleanish
-  controlslist?: string
-  crossorigin?: string
-  loop?: Booleanish
-  mediagroup?: string
-  muted?: Booleanish
-  playsinline?: Booleanish
-  preload?: string
-  src?: string
+  autoPlay?: Booleanish | undefined
+  controls?: Booleanish | undefined
+  controlsList?: string | undefined
+  crossOrigin?: CrossOrigin
+  loop?: Booleanish | undefined
+  mediaGroup?: string | undefined
+  muted?: Booleanish | undefined
+  playsInline?: Booleanish | undefined
+  preload?: string | undefined
+  src?: string | undefined
 }
 
 export interface MetaHTMLAttributes extends HTMLAttributes {
-  charset?: string
-  content?: string
-  httpequiv?: string
-  name?: string
+  charSet?: string | undefined
+  httpEquiv?: string | undefined
+  name?: string | undefined
+  media?: string | undefined
+  content?: string | undefined
 }
 
 export interface MeterHTMLAttributes extends HTMLAttributes {
-  form?: string
-  high?: Numberish
-  low?: Numberish
-  max?: Numberish
-  min?: Numberish
-  optimum?: Numberish
-  value?: string | string[] | number
+  form?: string | undefined
+  high?: Numberish | undefined
+  low?: Numberish | undefined
+  max?: Numberish | undefined
+  min?: Numberish | undefined
+  optimum?: Numberish | undefined
+  value?: string | ReadonlyArray<string> | Numberish | undefined
 }
 
 export interface QuoteHTMLAttributes extends HTMLAttributes {
-  cite?: string
+  cite?: string | undefined
 }
 
 export interface ObjectHTMLAttributes extends HTMLAttributes {
-  classid?: string
-  data?: string
-  form?: string
-  height?: Numberish
-  name?: string
-  type?: string
-  usemap?: string
-  width?: Numberish
-  wmode?: string
+  classID?: string | undefined
+  data?: string | undefined
+  form?: string | undefined
+  height?: Numberish | undefined
+  name?: string | undefined
+  type?: string | undefined
+  useMap?: string | undefined
+  width?: Numberish | undefined
+  wmode?: string | undefined
 }
 
 export interface OlHTMLAttributes extends HTMLAttributes {
-  reversed?: Booleanish
-  start?: Numberish
-  type?: '1' | 'a' | 'A' | 'i' | 'I'
+  reversed?: Booleanish | undefined
+  start?: Numberish | undefined
+  type?: '1' | 'a' | 'A' | 'i' | 'I' | undefined
 }
 
 export interface OptgroupHTMLAttributes extends HTMLAttributes {
-  disabled?: Booleanish
-  label?: string
+  disabled?: Booleanish | undefined
+  label?: string | undefined
 }
 
 export interface OptionHTMLAttributes extends HTMLAttributes {
-  disabled?: Booleanish
-  label?: string
-  selected?: Booleanish
-  value?: any // we support :value to be bound to anything w/ v-model
+  disabled?: Booleanish | undefined
+  label?: string | undefined
+  selected?: Booleanish | undefined
+  value?: string | ReadonlyArray<string> | Numberish | undefined
 }
 
 export interface OutputHTMLAttributes extends HTMLAttributes {
-  for?: string
-  form?: string
-  name?: string
+  form?: string | undefined
+  htmlFor?: string | undefined
+  name?: string | undefined
 }
 
 export interface ParamHTMLAttributes extends HTMLAttributes {
-  name?: string
-  value?: string | string[] | number
+  name?: string | undefined
+  value?: string | ReadonlyArray<string> | Numberish | undefined
 }
 
 export interface ProgressHTMLAttributes extends HTMLAttributes {
-  max?: Numberish
-  value?: string | string[] | number
+  max?: Numberish | undefined
+  value?: string | ReadonlyArray<string> | Numberish | undefined
+}
+
+export interface SlotHTMLAttributes extends HTMLAttributes {
+  name?: string | undefined
 }
 
 export interface ScriptHTMLAttributes extends HTMLAttributes {
-  async?: Booleanish
-  charset?: string
-  crossorigin?: string
-  defer?: Booleanish
-  integrity?: string
-  nomodule?: Booleanish
-  referrerpolicy?: HTMLAttributeReferrerPolicy
-  nonce?: string
-  src?: string
-  type?: string
+  async?: Booleanish | undefined
+  /** @deprecated */
+  charSet?: string | undefined
+  crossOrigin?: CrossOrigin
+  defer?: Booleanish | undefined
+  integrity?: string | undefined
+  noModule?: Booleanish | undefined
+  referrerPolicy?: HTMLAttributeReferrerPolicy | undefined
+  src?: string | undefined
+  type?: string | undefined
 }
 
 export interface SelectHTMLAttributes extends HTMLAttributes {
-  autocomplete?: string
-  autofocus?: Booleanish
-  disabled?: Booleanish
-  form?: string
-  multiple?: Booleanish
-  name?: string
-  required?: Booleanish
-  size?: Numberish
-  value?: any // we support :value to be bound to anything w/ v-model
+  autoComplete?: string | undefined
+  disabled?: Booleanish | undefined
+  form?: string | undefined
+  multiple?: Booleanish | undefined
+  name?: string | undefined
+  required?: Booleanish | undefined
+  size?: Numberish | undefined
+  value?: string | ReadonlyArray<string> | Numberish | undefined
 }
 
 export interface SourceHTMLAttributes extends HTMLAttributes {
-  media?: string
-  sizes?: string
-  src?: string
-  srcset?: string
-  type?: string
+  height?: Numberish | undefined
+  media?: string | undefined
+  sizes?: string | undefined
+  src?: string | undefined
+  srcSet?: string | undefined
+  type?: string | undefined
+  width?: Numberish | undefined
 }
 
 export interface StyleHTMLAttributes extends HTMLAttributes {
-  media?: string
-  nonce?: string
-  scoped?: Booleanish
-  type?: string
+  media?: string | undefined
+  scoped?: Booleanish | undefined
+  type?: string | undefined
 }
 
 export interface TableHTMLAttributes extends HTMLAttributes {
-  cellpadding?: Numberish
-  cellspacing?: Numberish
-  summary?: string
+  align?: 'left' | 'center' | 'right' | undefined
+  bgcolor?: string | undefined
+  border?: Numberish | undefined
+  cellPadding?: Numberish | undefined
+  cellSpacing?: Numberish | undefined
+  frame?: Booleanish | undefined
+  rules?: 'none' | 'groups' | 'rows' | 'columns' | 'all' | undefined
+  summary?: string | undefined
+  width?: Numberish | undefined
 }
 
 export interface TextareaHTMLAttributes extends HTMLAttributes {
-  autocomplete?: string
-  autofocus?: Booleanish
-  cols?: Numberish
-  dirname?: string
-  disabled?: Booleanish
-  form?: string
-  maxlength?: Numberish
-  minlength?: Numberish
-  name?: string
-  placeholder?: string
-  readonly?: Booleanish
-  required?: Booleanish
-  rows?: Numberish
-  value?: string | string[] | number
-  wrap?: string
+  autoComplete?: string | undefined
+  cols?: Numberish | undefined
+  dirName?: string | undefined
+  disabled?: Booleanish | undefined
+  form?: string | undefined
+  maxLength?: Numberish | undefined
+  minLength?: Numberish | undefined
+  name?: string | undefined
+  placeholder?: string | undefined
+  readOnly?: Booleanish | undefined
+  required?: Booleanish | undefined
+  rows?: Numberish | undefined
+  value?: string | ReadonlyArray<string> | Numberish | undefined
+  wrap?: string | undefined
 }
 
 export interface TdHTMLAttributes extends HTMLAttributes {
-  align?: 'left' | 'center' | 'right' | 'justify' | 'char'
-  colspan?: Numberish
-  headers?: string
-  rowspan?: Numberish
-  scope?: string
-  valign?: 'top' | 'middle' | 'bottom' | 'baseline'
+  align?: 'left' | 'center' | 'right' | 'justify' | 'char' | undefined
+  colSpan?: Numberish | undefined
+  headers?: string | undefined
+  rowSpan?: Numberish | undefined
+  scope?: string | undefined
+  abbr?: string | undefined
+  height?: Numberish | undefined
+  width?: Numberish | undefined
+  valign?: 'top' | 'middle' | 'bottom' | 'baseline' | undefined
 }
 
 export interface ThHTMLAttributes extends HTMLAttributes {
-  align?: 'left' | 'center' | 'right' | 'justify' | 'char'
-  colspan?: Numberish
-  headers?: string
-  rowspan?: Numberish
-  scope?: string
+  align?: 'left' | 'center' | 'right' | 'justify' | 'char' | undefined
+  colSpan?: Numberish | undefined
+  headers?: string | undefined
+  rowSpan?: Numberish | undefined
+  scope?: string | undefined
+  abbr?: string | undefined
 }
 
 export interface TimeHTMLAttributes extends HTMLAttributes {
-  datetime?: string
+  dateTime?: string | undefined
 }
 
 export interface TrackHTMLAttributes extends HTMLAttributes {
-  default?: Booleanish
-  kind?: string
-  label?: string
-  src?: string
-  srclang?: string
+  default?: Booleanish | undefined
+  kind?: string | undefined
+  label?: string | undefined
+  src?: string | undefined
+  srcLang?: string | undefined
 }
 
-export interface VideoHTMLAttributes extends MediaHTMLAttributes {
-  height?: Numberish
-  playsinline?: Booleanish
-  poster?: string
-  width?: Numberish
-  disablePictureInPicture?: Booleanish
+interface VideoHTMLAttributes extends MediaHTMLAttributes {
+  height?: Numberish | undefined
+  playsInline?: Booleanish | undefined
+  poster?: string | undefined
+  width?: Numberish | undefined
+  disablePictureInPicture?: Booleanish | undefined
+  disableRemotePlayback?: Booleanish | undefined
 }
 
 export interface WebViewHTMLAttributes extends HTMLAttributes {
-  allowfullscreen?: Booleanish
-  allowpopups?: Booleanish
-  autoFocus?: Booleanish
-  autosize?: Booleanish
-  blinkfeatures?: string
-  disableblinkfeatures?: string
-  disableguestresize?: Booleanish
-  disablewebsecurity?: Booleanish
-  guestinstance?: string
-  httpreferrer?: string
-  nodeintegration?: Booleanish
-  partition?: string
-  plugins?: Booleanish
-  preload?: string
-  src?: string
-  useragent?: string
-  webpreferences?: string
+  allowFullScreen?: Booleanish | undefined
+  allowpopups?: Booleanish | undefined
+  autosize?: Booleanish | undefined
+  blinkfeatures?: string | undefined
+  disableblinkfeatures?: string | undefined
+  disableguestresize?: Booleanish | undefined
+  disablewebsecurity?: Booleanish | undefined
+  guestinstance?: string | undefined
+  httpreferrer?: string | undefined
+  nodeintegration?: Booleanish | undefined
+  partition?: string | undefined
+  plugins?: Booleanish | undefined
+  preload?: string | undefined
+  src?: string | undefined
+  useragent?: string | undefined
+  webpreferences?: string | undefined
 }
 
-export interface SVGAttributes extends AriaAttributes, EventHandlers<Events> {
+// this list is "complete" in that it contains every SVG attribute
+// The three broad type categories are (in order of restrictiveness):
+//   - "Numberish"
+//   - "string"
+//   - union of string literals
+interface SVGAttributes extends AriaAttributes, EventHandlers<Events> {
   innerHTML?: string
 
   /**
@@ -778,28 +954,29 @@ export interface SVGAttributes extends AriaAttributes, EventHandlers<Events> {
   class?: any
   style?: StyleValue
 
-  color?: string
-  height?: Numberish
-  id?: string
-  lang?: string
-  max?: Numberish
-  media?: string
-  method?: string
-  min?: Numberish
-  name?: string
-  target?: string
-  type?: string
-  width?: Numberish
+  color?: string | undefined
+  height?: Numberish | undefined
+  id?: string | undefined
+  lang?: string | undefined
+  max?: Numberish | undefined
+  media?: string | undefined
+  method?: string | undefined
+  min?: Numberish | undefined
+  name?: string | undefined
+  target?: string | undefined
+  type?: string | undefined
+  width?: Numberish | undefined
 
   // Other HTML properties supported by SVG elements in browsers
-  role?: string
-  tabindex?: Numberish
+  role?: AriaRole | undefined
+  tabIndex?: Numberish | undefined
+  crossOrigin?: CrossOrigin
 
   // SVG Specific attributes
-  'accent-height'?: Numberish
-  accumulate?: 'none' | 'sum'
-  additive?: 'replace' | 'sum'
-  'alignment-baseline'?:
+  accentHeight?: Numberish | undefined
+  accumulate?: 'none' | 'sum' | undefined
+  additive?: 'replace' | 'sum' | undefined
+  alignmentBaseline?:
     | 'auto'
     | 'baseline'
     | 'before-edge'
@@ -813,238 +990,250 @@ export interface SVGAttributes extends AriaAttributes, EventHandlers<Events> {
     | 'hanging'
     | 'mathematical'
     | 'inherit'
-  allowReorder?: 'no' | 'yes'
-  alphabetic?: Numberish
-  amplitude?: Numberish
-  'arabic-form'?: 'initial' | 'medial' | 'terminal' | 'isolated'
-  ascent?: Numberish
-  attributeName?: string
-  attributeType?: string
-  autoReverse?: Numberish
-  azimuth?: Numberish
-  baseFrequency?: Numberish
-  'baseline-shift'?: Numberish
-  baseProfile?: Numberish
-  bbox?: Numberish
-  begin?: Numberish
-  bias?: Numberish
-  by?: Numberish
-  calcMode?: Numberish
-  'cap-height'?: Numberish
-  clip?: Numberish
-  'clip-path'?: string
-  clipPathUnits?: Numberish
-  'clip-rule'?: Numberish
-  'color-interpolation'?: Numberish
-  'color-interpolation-filters'?: 'auto' | 'sRGB' | 'linearRGB' | 'inherit'
-  'color-profile'?: Numberish
-  'color-rendering'?: Numberish
-  contentScriptType?: Numberish
-  contentStyleType?: Numberish
-  cursor?: Numberish
-  cx?: Numberish
-  cy?: Numberish
-  d?: string
-  decelerate?: Numberish
-  descent?: Numberish
-  diffuseConstant?: Numberish
-  direction?: Numberish
-  display?: Numberish
-  divisor?: Numberish
-  'dominant-baseline'?: Numberish
-  dur?: Numberish
-  dx?: Numberish
-  dy?: Numberish
-  edgeMode?: Numberish
-  elevation?: Numberish
-  'enable-background'?: Numberish
-  end?: Numberish
-  exponent?: Numberish
-  externalResourcesRequired?: Numberish
-  fill?: string
-  'fill-opacity'?: Numberish
-  'fill-rule'?: 'nonzero' | 'evenodd' | 'inherit'
-  filter?: string
-  filterRes?: Numberish
-  filterUnits?: Numberish
-  'flood-color'?: Numberish
-  'flood-opacity'?: Numberish
-  focusable?: Numberish
-  'font-family'?: string
-  'font-size'?: Numberish
-  'font-size-adjust'?: Numberish
-  'font-stretch'?: Numberish
-  'font-style'?: Numberish
-  'font-variant'?: Numberish
-  'font-weight'?: Numberish
-  format?: Numberish
-  from?: Numberish
-  fx?: Numberish
-  fy?: Numberish
-  g1?: Numberish
-  g2?: Numberish
-  'glyph-name'?: Numberish
-  'glyph-orientation-horizontal'?: Numberish
-  'glyph-orientation-vertical'?: Numberish
-  glyphRef?: Numberish
-  gradientTransform?: string
-  gradientUnits?: string
-  hanging?: Numberish
-  'horiz-adv-x'?: Numberish
-  'horiz-origin-x'?: Numberish
-  href?: string
-  ideographic?: Numberish
-  'image-rendering'?: Numberish
-  in2?: Numberish
-  in?: string
-  intercept?: Numberish
-  k1?: Numberish
-  k2?: Numberish
-  k3?: Numberish
-  k4?: Numberish
-  k?: Numberish
-  kernelMatrix?: Numberish
-  kernelUnitLength?: Numberish
-  kerning?: Numberish
-  keyPoints?: Numberish
-  keySplines?: Numberish
-  keyTimes?: Numberish
-  lengthAdjust?: Numberish
-  'letter-spacing'?: Numberish
-  'lighting-color'?: Numberish
-  limitingConeAngle?: Numberish
-  local?: Numberish
-  'marker-end'?: string
-  markerHeight?: Numberish
-  'marker-mid'?: string
-  'marker-start'?: string
-  markerUnits?: Numberish
-  markerWidth?: Numberish
-  mask?: string
-  maskContentUnits?: Numberish
-  maskUnits?: Numberish
-  mathematical?: Numberish
-  mode?: Numberish
-  numOctaves?: Numberish
-  offset?: Numberish
-  opacity?: Numberish
-  operator?: Numberish
-  order?: Numberish
-  orient?: Numberish
-  orientation?: Numberish
-  origin?: Numberish
-  overflow?: Numberish
-  'overline-position'?: Numberish
-  'overline-thickness'?: Numberish
-  'paint-order'?: Numberish
-  'panose-1'?: Numberish
-  pathLength?: Numberish
-  patternContentUnits?: string
-  patternTransform?: Numberish
-  patternUnits?: string
-  'pointer-events'?: Numberish
-  points?: string
-  pointsAtX?: Numberish
-  pointsAtY?: Numberish
-  pointsAtZ?: Numberish
-  preserveAlpha?: Numberish
-  preserveAspectRatio?: string
-  primitiveUnits?: Numberish
-  r?: Numberish
-  radius?: Numberish
-  refX?: Numberish
-  refY?: Numberish
-  renderingIntent?: Numberish
-  repeatCount?: Numberish
-  repeatDur?: Numberish
-  requiredExtensions?: Numberish
-  requiredFeatures?: Numberish
-  restart?: Numberish
-  result?: string
-  rotate?: Numberish
-  rx?: Numberish
-  ry?: Numberish
-  scale?: Numberish
-  seed?: Numberish
-  'shape-rendering'?: Numberish
-  slope?: Numberish
-  spacing?: Numberish
-  specularConstant?: Numberish
-  specularExponent?: Numberish
-  speed?: Numberish
-  spreadMethod?: string
-  startOffset?: Numberish
-  stdDeviation?: Numberish
-  stemh?: Numberish
-  stemv?: Numberish
-  stitchTiles?: Numberish
-  'stop-color'?: string
-  'stop-opacity'?: Numberish
-  'strikethrough-position'?: Numberish
-  'strikethrough-thickness'?: Numberish
-  string?: Numberish
-  stroke?: string
-  'stroke-dasharray'?: Numberish
-  'stroke-dashoffset'?: Numberish
-  'stroke-linecap'?: 'butt' | 'round' | 'square' | 'inherit'
-  'stroke-linejoin'?: 'miter' | 'round' | 'bevel' | 'inherit'
-  'stroke-miterlimit'?: Numberish
-  'stroke-opacity'?: Numberish
-  'stroke-width'?: Numberish
-  surfaceScale?: Numberish
-  systemLanguage?: Numberish
-  tableValues?: Numberish
-  targetX?: Numberish
-  targetY?: Numberish
-  'text-anchor'?: string
-  'text-decoration'?: Numberish
-  textLength?: Numberish
-  'text-rendering'?: Numberish
-  to?: Numberish
-  transform?: string
-  u1?: Numberish
-  u2?: Numberish
-  'underline-position'?: Numberish
-  'underline-thickness'?: Numberish
-  unicode?: Numberish
-  'unicode-bidi'?: Numberish
-  'unicode-range'?: Numberish
-  'unitsPer-em'?: Numberish
-  'v-alphabetic'?: Numberish
-  values?: string
-  'vector-effect'?: Numberish
-  version?: string
-  'vert-adv-y'?: Numberish
-  'vert-origin-x'?: Numberish
-  'vert-origin-y'?: Numberish
-  'v-hanging'?: Numberish
-  'v-ideographic'?: Numberish
-  viewBox?: string
-  viewTarget?: Numberish
-  visibility?: Numberish
-  'v-mathematical'?: Numberish
-  widths?: Numberish
-  'word-spacing'?: Numberish
-  'writing-mode'?: Numberish
-  x1?: Numberish
-  x2?: Numberish
-  x?: Numberish
-  xChannelSelector?: string
-  'x-height'?: Numberish
-  xlinkActuate?: string
-  xlinkArcrole?: string
-  xlinkHref?: string
-  xlinkRole?: string
-  xlinkShow?: string
-  xlinkTitle?: string
-  xlinkType?: string
-  xmlns?: string
-  y1?: Numberish
-  y2?: Numberish
-  y?: Numberish
-  yChannelSelector?: string
-  z?: Numberish
-  zoomAndPan?: string
+    | undefined
+  allowReorder?: 'no' | 'yes' | undefined
+  alphabetic?: Numberish | undefined
+  amplitude?: Numberish | undefined
+  arabicForm?: 'initial' | 'medial' | 'terminal' | 'isolated' | undefined
+  ascent?: Numberish | undefined
+  attributeName?: string | undefined
+  attributeType?: string | undefined
+  autoReverse?: Booleanish | undefined
+  azimuth?: Numberish | undefined
+  baseFrequency?: Numberish | undefined
+  baselineShift?: Numberish | undefined
+  baseProfile?: Numberish | undefined
+  bbox?: Numberish | undefined
+  begin?: Numberish | undefined
+  bias?: Numberish | undefined
+  by?: Numberish | undefined
+  calcMode?: Numberish | undefined
+  capHeight?: Numberish | undefined
+  clip?: Numberish | undefined
+  clipPath?: string | undefined
+  clipPathUnits?: Numberish | undefined
+  clipRule?: Numberish | undefined
+  colorInterpolation?: Numberish | undefined
+  colorInterpolationFilters?:
+    | 'auto'
+    | 'sRGB'
+    | 'linearRGB'
+    | 'inherit'
+    | undefined
+  colorProfile?: Numberish | undefined
+  colorRendering?: Numberish | undefined
+  contentScriptType?: Numberish | undefined
+  contentStyleType?: Numberish | undefined
+  cursor?: Numberish | undefined
+  cx?: Numberish | undefined
+  cy?: Numberish | undefined
+  d?: string | undefined
+  decelerate?: Numberish | undefined
+  descent?: Numberish | undefined
+  diffuseConstant?: Numberish | undefined
+  direction?: Numberish | undefined
+  display?: Numberish | undefined
+  divisor?: Numberish | undefined
+  dominantBaseline?: Numberish | undefined
+  dur?: Numberish | undefined
+  dx?: Numberish | undefined
+  dy?: Numberish | undefined
+  edgeMode?: Numberish | undefined
+  elevation?: Numberish | undefined
+  enableBackground?: Numberish | undefined
+  end?: Numberish | undefined
+  exponent?: Numberish | undefined
+  externalResourcesRequired?: Booleanish | undefined
+  fill?: string | undefined
+  fillOpacity?: Numberish | undefined
+  fillRule?: 'nonzero' | 'evenodd' | 'inherit' | undefined
+  filter?: string | undefined
+  filterRes?: Numberish | undefined
+  filterUnits?: Numberish | undefined
+  floodColor?: Numberish | undefined
+  floodOpacity?: Numberish | undefined
+  focusable?: Booleanish | 'auto' | undefined
+  fontFamily?: string | undefined
+  fontSize?: Numberish | undefined
+  fontSizeAdjust?: Numberish | undefined
+  fontStretch?: Numberish | undefined
+  fontStyle?: Numberish | undefined
+  fontVariant?: Numberish | undefined
+  fontWeight?: Numberish | undefined
+  format?: Numberish | undefined
+  fr?: Numberish | undefined
+  from?: Numberish | undefined
+  fx?: Numberish | undefined
+  fy?: Numberish | undefined
+  g1?: Numberish | undefined
+  g2?: Numberish | undefined
+  glyphName?: Numberish | undefined
+  glyphOrientationHorizontal?: Numberish | undefined
+  glyphOrientationVertical?: Numberish | undefined
+  glyphRef?: Numberish | undefined
+  gradientTransform?: string | undefined
+  gradientUnits?: string | undefined
+  hanging?: Numberish | undefined
+  horizAdvX?: Numberish | undefined
+  horizOriginX?: Numberish | undefined
+  href?: string | undefined
+  ideographic?: Numberish | undefined
+  imageRendering?: Numberish | undefined
+  in2?: Numberish | undefined
+  in?: string | undefined
+  intercept?: Numberish | undefined
+  k1?: Numberish | undefined
+  k2?: Numberish | undefined
+  k3?: Numberish | undefined
+  k4?: Numberish | undefined
+  k?: Numberish | undefined
+  kernelMatrix?: Numberish | undefined
+  kernelUnitLength?: Numberish | undefined
+  kerning?: Numberish | undefined
+  keyPoints?: Numberish | undefined
+  keySplines?: Numberish | undefined
+  keyTimes?: Numberish | undefined
+  lengthAdjust?: Numberish | undefined
+  letterSpacing?: Numberish | undefined
+  lightingColor?: Numberish | undefined
+  limitingConeAngle?: Numberish | undefined
+  local?: Numberish | undefined
+  markerEnd?: string | undefined
+  markerHeight?: Numberish | undefined
+  markerMid?: string | undefined
+  markerStart?: string | undefined
+  markerUnits?: Numberish | undefined
+  markerWidth?: Numberish | undefined
+  mask?: string | undefined
+  maskContentUnits?: Numberish | undefined
+  maskUnits?: Numberish | undefined
+  mathematical?: Numberish | undefined
+  mode?: Numberish | undefined
+  numOctaves?: Numberish | undefined
+  offset?: Numberish | undefined
+  opacity?: Numberish | undefined
+  operator?: Numberish | undefined
+  order?: Numberish | undefined
+  orient?: Numberish | undefined
+  orientation?: Numberish | undefined
+  origin?: Numberish | undefined
+  overflow?: Numberish | undefined
+  overlinePosition?: Numberish | undefined
+  overlineThickness?: Numberish | undefined
+  paintOrder?: Numberish | undefined
+  panose1?: Numberish | undefined
+  path?: string | undefined
+  pathLength?: Numberish | undefined
+  patternContentUnits?: string | undefined
+  patternTransform?: Numberish | undefined
+  patternUnits?: string | undefined
+  pointerEvents?: Numberish | undefined
+  points?: string | undefined
+  pointsAtX?: Numberish | undefined
+  pointsAtY?: Numberish | undefined
+  pointsAtZ?: Numberish | undefined
+  preserveAlpha?: Booleanish | undefined
+  preserveAspectRatio?: string | undefined
+  primitiveUnits?: Numberish | undefined
+  r?: Numberish | undefined
+  radius?: Numberish | undefined
+  refX?: Numberish | undefined
+  refY?: Numberish | undefined
+  renderingIntent?: Numberish | undefined
+  repeatCount?: Numberish | undefined
+  repeatDur?: Numberish | undefined
+  requiredExtensions?: Numberish | undefined
+  requiredFeatures?: Numberish | undefined
+  restart?: Numberish | undefined
+  result?: string | undefined
+  rotate?: Numberish | undefined
+  rx?: Numberish | undefined
+  ry?: Numberish | undefined
+  scale?: Numberish | undefined
+  seed?: Numberish | undefined
+  shapeRendering?: Numberish | undefined
+  slope?: Numberish | undefined
+  spacing?: Numberish | undefined
+  specularConstant?: Numberish | undefined
+  specularExponent?: Numberish | undefined
+  speed?: Numberish | undefined
+  spreadMethod?: string | undefined
+  startOffset?: Numberish | undefined
+  stdDeviation?: Numberish | undefined
+  stemh?: Numberish | undefined
+  stemv?: Numberish | undefined
+  stitchTiles?: Numberish | undefined
+  stopColor?: string | undefined
+  stopOpacity?: Numberish | undefined
+  strikethroughPosition?: Numberish | undefined
+  strikethroughThickness?: Numberish | undefined
+  string?: Numberish | undefined
+  stroke?: string | undefined
+  strokeDasharray?: string | Numberish | undefined
+  strokeDashoffset?: string | Numberish | undefined
+  strokeLinecap?: 'butt' | 'round' | 'square' | 'inherit' | undefined
+  strokeLinejoin?: 'miter' | 'round' | 'bevel' | 'inherit' | undefined
+  strokeMiterlimit?: Numberish | undefined
+  strokeOpacity?: Numberish | undefined
+  strokeWidth?: Numberish | undefined
+  surfaceScale?: Numberish | undefined
+  systemLanguage?: Numberish | undefined
+  tableValues?: Numberish | undefined
+  targetX?: Numberish | undefined
+  targetY?: Numberish | undefined
+  textAnchor?: string | undefined
+  textDecoration?: Numberish | undefined
+  textLength?: Numberish | undefined
+  textRendering?: Numberish | undefined
+  to?: Numberish | undefined
+  transform?: string | undefined
+  u1?: Numberish | undefined
+  u2?: Numberish | undefined
+  underlinePosition?: Numberish | undefined
+  underlineThickness?: Numberish | undefined
+  unicode?: Numberish | undefined
+  unicodeBidi?: Numberish | undefined
+  unicodeRange?: Numberish | undefined
+  unitsPerEm?: Numberish | undefined
+  vAlphabetic?: Numberish | undefined
+  values?: string | undefined
+  vectorEffect?: Numberish | undefined
+  version?: string | undefined
+  vertAdvY?: Numberish | undefined
+  vertOriginX?: Numberish | undefined
+  vertOriginY?: Numberish | undefined
+  vHanging?: Numberish | undefined
+  vIdeographic?: Numberish | undefined
+  viewBox?: string | undefined
+  viewTarget?: Numberish | undefined
+  visibility?: Numberish | undefined
+  vMathematical?: Numberish | undefined
+  widths?: Numberish | undefined
+  wordSpacing?: Numberish | undefined
+  writingMode?: Numberish | undefined
+  x1?: Numberish | undefined
+  x2?: Numberish | undefined
+  x?: Numberish | undefined
+  xChannelSelector?: string | undefined
+  xHeight?: Numberish | undefined
+  xlinkActuate?: string | undefined
+  xlinkArcrole?: string | undefined
+  xlinkHref?: string | undefined
+  xlinkRole?: string | undefined
+  xlinkShow?: string | undefined
+  xlinkTitle?: string | undefined
+  xlinkType?: string | undefined
+  xmlBase?: string | undefined
+  xmlLang?: string | undefined
+  xmlns?: string | undefined
+  xmlnsXlink?: string | undefined
+  xmlSpace?: string | undefined
+  y1?: Numberish | undefined
+  y2?: Numberish | undefined
+  y?: Numberish | undefined
+  yChannelSelector?: string | undefined
+  z?: Numberish | undefined
+  zoomAndPan?: string | undefined
 }
 
 export interface IntrinsicElementAttributes {
@@ -1059,12 +1248,14 @@ export interface IntrinsicElementAttributes {
   base: BaseHTMLAttributes
   bdi: HTMLAttributes
   bdo: HTMLAttributes
+  big: HTMLAttributes
   blockquote: BlockquoteHTMLAttributes
   body: HTMLAttributes
   br: HTMLAttributes
   button: ButtonHTMLAttributes
   canvas: CanvasHTMLAttributes
   caption: HTMLAttributes
+  center: HTMLAttributes
   cite: HTMLAttributes
   code: HTMLAttributes
   col: ColHTMLAttributes
@@ -1112,6 +1303,7 @@ export interface IntrinsicElementAttributes {
   map: MapHTMLAttributes
   mark: HTMLAttributes
   menu: MenuHTMLAttributes
+  menuitem: HTMLAttributes
   meta: MetaHTMLAttributes
   meter: MeterHTMLAttributes
   nav: HTMLAttributes
@@ -1133,6 +1325,7 @@ export interface IntrinsicElementAttributes {
   ruby: HTMLAttributes
   s: HTMLAttributes
   samp: HTMLAttributes
+  search: HTMLAttributes
   script: ScriptHTMLAttributes
   section: HTMLAttributes
   select: SelectHTMLAttributes
@@ -1226,119 +1419,119 @@ export interface IntrinsicElementAttributes {
 }
 
 export interface Events {
-  // clipboard events
+  // Clipboard Events
   onCopy: ClipboardEvent
   onCut: ClipboardEvent
   onPaste: ClipboardEvent
 
-  // composition events
-  onCompositionend: CompositionEvent
-  onCompositionstart: CompositionEvent
-  onCompositionupdate: CompositionEvent
+  // Composition Events
+  onCompositionEnd: CompositionEvent
+  onCompositionStart: CompositionEvent
+  onCompositionUpdate: CompositionEvent
 
-  // drag drop events
-  onDrag: DragEvent
-  onDragend: DragEvent
-  onDragenter: DragEvent
-  onDragexit: DragEvent
-  onDragleave: DragEvent
-  onDragover: DragEvent
-  onDragstart: DragEvent
-  onDrop: DragEvent
-
-  // focus events
+  // Focus Events
   onFocus: FocusEvent
-  onFocusin: FocusEvent
-  onFocusout: FocusEvent
+  onFocusIn: FocusEvent
+  onFocusOut: FocusEvent
   onBlur: FocusEvent
 
-  // form events
+  // Form Events
   onChange: Event
-  onBeforeinput: Event
+  onBeforeInput: Event
   onInput: Event
   onReset: Event
   onSubmit: Event
   onInvalid: Event
 
-  // image events
+  // Image Events
   onLoad: Event
-  onError: Event
+  onError: Event // also a Media Event
 
-  // keyboard events
-  onKeydown: KeyboardEvent
-  onKeypress: KeyboardEvent
-  onKeyup: KeyboardEvent
+  // Keyboard Events
+  onKeyDown: KeyboardEvent
+  /** @deprecated */
+  onKeyPress: KeyboardEvent
+  /** @deprecated */
+  onKeyUp: KeyboardEvent
 
-  // mouse events
-  onAuxclick: MouseEvent
-  onClick: MouseEvent
-  onContextmenu: MouseEvent
-  onDblclick: MouseEvent
-  onMousedown: MouseEvent
-  onMouseenter: MouseEvent
-  onMouseleave: MouseEvent
-  onMousemove: MouseEvent
-  onMouseout: MouseEvent
-  onMouseover: MouseEvent
-  onMouseup: MouseEvent
-
-  // media events
+  // Media Events
   onAbort: Event
-  onCanplay: Event
-  onCanplaythrough: Event
-  onDurationchange: Event
+  onCanPlay: Event
+  onCanPlayThrough: Event
+  onDurationChange: Event
   onEmptied: Event
   onEncrypted: Event
   onEnded: Event
-  onLoadeddata: Event
-  onLoadedmetadata: Event
-  onLoadstart: Event
+  onLoadedData: Event
+  onLoadedMetadata: Event
+  onLoadStart: Event
   onPause: Event
   onPlay: Event
   onPlaying: Event
   onProgress: Event
-  onRatechange: Event
+  onRateChange: Event
+  onResize: Event
   onSeeked: Event
   onSeeking: Event
   onStalled: Event
   onSuspend: Event
-  onTimeupdate: Event
-  onVolumechange: Event
+  onTimeUpdate: Event
+  onVolumeChange: Event
   onWaiting: Event
 
-  // selection events
+  // MouseEvents
+  onAuxClick: MouseEvent
+  onClick: MouseEvent
+  onContextMenu: MouseEvent
+  onDoubleClick: MouseEvent
+  onDrag: DragEvent
+  onDragEnd: DragEvent
+  onDragEnter: DragEvent
+  onDragExit: DragEvent
+  onDragLeave: DragEvent
+  onDragOver: DragEvent
+  onDragStart: DragEvent
+  onDrop: DragEvent
+  onMouseDown: MouseEvent
+  onMouseEnter: MouseEvent
+  onMouseLeave: MouseEvent
+  onMouseMove: MouseEvent
+  onMouseOut: MouseEvent
+  onMouseOver: MouseEvent
+  onMouseUp: MouseEvent
+
+  // Selection Events
   onSelect: Event
 
-  // UI events
+  // Touch Events
+  onTouchCancel: TouchEvent
+  onTouchEnd: TouchEvent
+  onTouchMove: TouchEvent
+  onTouchStart: TouchEvent
+
+  // Pointer Events
+  onPointerDown: PointerEvent
+  onPointerMove: PointerEvent
+  onPointerUp: PointerEvent
+  onPointerCancel: PointerEvent
+  onPointerEnter: PointerEvent
+  onPointerLeave: PointerEvent
+  onPointerOver: PointerEvent
+  onPointerOut: PointerEvent
+
+  // UI Events
   onScroll: UIEvent
 
-  // touch events
-  onTouchcancel: TouchEvent
-  onTouchend: TouchEvent
-  onTouchmove: TouchEvent
-  onTouchstart: TouchEvent
-
-  // pointer events
-  onPointerdown: PointerEvent
-  onPointermove: PointerEvent
-  onPointerup: PointerEvent
-  onPointercancel: PointerEvent
-  onPointerenter: PointerEvent
-  onPointerleave: PointerEvent
-  onPointerover: PointerEvent
-  onPointerout: PointerEvent
-
-  // wheel events
+  // Wheel Events
   onWheel: WheelEvent
 
-  // animation events
-  onAnimationstart: AnimationEvent
-  onAnimationend: AnimationEvent
-  onAnimationiteration: AnimationEvent
+  // Animation Events
+  onAnimationStart: AnimationEvent
+  onAnimationEnd: AnimationEvent
+  onAnimationIteration: AnimationEvent
 
-  // transition events
-  onTransitionend: TransitionEvent
-  onTransitionstart: TransitionEvent
+  // Transition Events
+  onTransitionEnd: TransitionEvent
 }
 
 type EventHandlers<E> = {
