@@ -29,8 +29,8 @@
 import * as CSS from 'csstype'
 
 export interface CSSProperties
-  extends CSS.Properties<string | Numberish>,
-    CSS.PropertiesHyphen<string | Numberish> {
+  extends CSS.Properties<Numberish>,
+    CSS.PropertiesHyphen<Numberish> {
   /**
    * The index signature was removed to enable closed typing for style
    * using CSSType. You're able to use type assertion or module augmentation
@@ -39,7 +39,7 @@ export interface CSSProperties
    * For examples and more information, visit:
    * https://github.com/frenic/csstype#what-should-i-do-when-i-get-type-errors
    */
-  [v: `--${string}`]: string | Numberish | undefined
+  [v: `--${string}`]: Numberish | undefined
 }
 
 type Booleanish = boolean | 'true' | 'false'
@@ -73,7 +73,7 @@ export interface AriaAttributes {
    * Indicates the current "checked" state of checkboxes, radio buttons, and other widgets.
    * @see aria-pressed @see aria-selected.
    */
-  'aria-checked'?: boolean | 'false' | 'mixed' | 'true'
+  'aria-checked'?: Booleanish | 'mixed'
   /**
    * Defines the total number of columns in a table, grid, or treegrid.
    * @see aria-colindex.
@@ -100,15 +100,7 @@ export interface AriaAttributes {
    */
   'aria-controls'?: string
   /** Indicates the element that represents the current item within a container or set of related elements. */
-  'aria-current'?:
-    | boolean
-    | 'false'
-    | 'true'
-    | 'page'
-    | 'step'
-    | 'location'
-    | 'date'
-    | 'time'
+  'aria-current'?: Booleanish | 'page' | 'step' | 'location' | 'date' | 'time'
   /**
    * Identifies the element (or elements) that describes the object.
    * @see aria-labelledby
@@ -152,16 +144,7 @@ export interface AriaAttributes {
    */
   'aria-grabbed'?: Booleanish
   /** Indicates the availability and type of interactive popup element, such as menu or dialog, that can be triggered by an element. */
-  'aria-haspopup'?:
-    | boolean
-    | 'false'
-    | 'true'
-    | 'menu'
-    | 'listbox'
-    | 'tree'
-    | 'grid'
-    | 'dialog'
-
+  'aria-haspopup'?: Booleanish | 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog'
   /**
    * Indicates whether the element is exposed to an accessibility API.
    * @see aria-disabled.
@@ -171,8 +154,7 @@ export interface AriaAttributes {
    * Indicates the entered value does not conform to the format expected by the application.
    * @see aria-errormessage.
    */
-  'aria-invalid'?: boolean | 'false' | 'true' | 'grammar' | 'spelling'
-
+  'aria-invalid'?: Booleanish | 'grammar' | 'spelling'
   /** Indicates keyboard shortcuts that an author has implemented to activate or give focus to an element. */
   'aria-keyshortcuts'?: string
   /**
@@ -217,7 +199,7 @@ export interface AriaAttributes {
    * Indicates the current "pressed" state of toggle buttons.
    * @see aria-checked @see aria-selected.
    */
-  'aria-pressed'?: boolean | 'false' | 'mixed' | 'true'
+  'aria-pressed'?: Booleanish | 'mixed'
   /**
    * Indicates that the element is not editable, but is otherwise operable.
    * @see aria-disabled.
@@ -298,48 +280,53 @@ export interface HTMLAttributes extends AriaAttributes, EventHandlers<Events> {
   style?: StyleValue
 
   // Standard HTML Attributes
-  accesskey?: string
-  contenteditable?: Booleanish | 'inherit'
-  contextmenu?: string
+  accessKey?: string
+  autoFocus?: boolean
+  className?: string
+  contentEditable?: Booleanish | 'inherit'
+  contextMenu?: string
   dir?: string
   draggable?: Booleanish
-  hidden?: Booleanish | '' | 'hidden' | 'until-found'
+  hidden?: boolean
   id?: string
-  inert?: Booleanish
   lang?: string
+  nonce?: string
   placeholder?: string
-  spellcheck?: Booleanish
-  tabindex?: Numberish
+  spellCheck?: Booleanish
+  tabIndex?: number
   title?: string
   translate?: 'yes' | 'no'
 
   // Unknown
-  radiogroup?: string // <command>, <menuitem>
+  radioGroup?: string // <command>, <menuitem>
 
   // WAI-ARIA
-  role?: string
+  role?: AriaRole
 
   // RDFa Attributes
   about?: string
+  content?: string
   datatype?: string
   inlist?: any
   prefix?: string
   property?: string
+  rel?: string
   resource?: string
+  rev?: string
   typeof?: string
   vocab?: string
 
   // Non-standard Attributes
-  autocapitalize?: string
-  autocorrect?: string
-  autosave?: string
+  autoCapitalize?: string
+  autoCorrect?: string
+  autoSave?: string
   color?: string
-  itemprop?: string
-  itemscope?: Booleanish
-  itemtype?: string
-  itemid?: string
-  itemref?: string
-  results?: Numberish
+  itemProp?: string
+  itemScope?: boolean
+  itemType?: string
+  itemID?: string
+  itemRef?: string
+  results?: number
   security?: string
   unselectable?: 'on' | 'off'
 
@@ -348,7 +335,7 @@ export interface HTMLAttributes extends AriaAttributes, EventHandlers<Events> {
    * Hints at the type of data that might be entered by the user while editing the element or its contents
    * @see https://html.spec.whatwg.org/multipage/interaction.html#input-modalities:-the-inputmode-attribute
    */
-  inputmode?:
+  inputMode?:
     | 'none'
     | 'text'
     | 'tel'
@@ -790,10 +777,6 @@ export interface ParamHTMLAttributes extends HTMLAttributes {
 export interface ProgressHTMLAttributes extends HTMLAttributes {
   max?: Numberish
   value?: string | ReadonlyArray<string> | Numberish
-}
-
-export interface SlotHTMLAttributes extends HTMLAttributes {
-  name?: string
 }
 
 export interface ScriptHTMLAttributes extends HTMLAttributes {
